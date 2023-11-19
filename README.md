@@ -3,6 +3,8 @@
 <img src="https://user-images.githubusercontent.com/56625259/186507604-2d4a4fd9-6471-4469-a3f4-ce4bf5aebc4a.png" width="457" height="259">
 
 # fetchit
+## Known Issue: Package count does not work properly. Will only count the first package format listed.
+
 
 A system fetch tool for Linux, written in ***Rust***.
 

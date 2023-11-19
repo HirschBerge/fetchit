@@ -6,7 +6,8 @@
 use std::process::{Command, Stdio}; // For executing shell commands.
 
 pub fn get_num_packages() -> u32 {
-    let num_packages = packages_generic("pacman", &["-Q"])
+    let num_packages = packages_nixos_based()
+        .or_else(|_| packages_generic("pacman", &["-Q"]))
         .or_else(|_| packages_debian_based())
         .or_else(|_| packges_fedora_based())
         .or_else(|_| packages_generic("pkg", &["info"]))
