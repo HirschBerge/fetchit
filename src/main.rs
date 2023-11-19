@@ -21,15 +21,10 @@ fn main() {
     };
 
     let kernel = fetchit::get_kernel_version();
-
     let shell_name = fetchit::get_shell_name();
-
     let session = fetchit::get_session_name();
-
     let uptime = fetchit::get_sys_uptime();
-
     let total_packages = packages::get_num_packages().to_string();
-
     let hostname = fetchit::get_hostname();
     // Create a vector to store the lengths of all the strings
     let string_length_vector = vec![

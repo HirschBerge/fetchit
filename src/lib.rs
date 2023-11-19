@@ -1,9 +1,6 @@
-// @Author: Ruturajn <nanotiruturaj@gmail.com>
-// @Date  : 19th August, 2022
-// @Brief : This is the lib.rs file for `fetchit`
-
 use std::env; // For getting commandline arguments and reading Environment
               // Variables.
+extern crate uptime_lib;
 use std::error::Error;
 use std::fs; // For reading files.
 use std::process::Command; // For exit with a code.
@@ -165,29 +162,27 @@ pub fn get_session_name() -> String {
 }
 
 pub fn get_sys_uptime() -> String {
-    // Get the uptime using the `uptime -p` command.
-    let up_time = Command::new("uptime").arg("-p").output();
-
-    let up_time = match up_time {
-        Ok(x) => {
-            // Remove the word up.
-            String::from_utf8(x.stdout)
-                .unwrap()
-                .replace("hours", "h") // Replace words with letters.
-                .replace("hour", "h")
-                .replace("minutes", "m")
-                .replace("minute", "m")
-                .replace("days", "d")
-                .replace("day", "d")
-                .replace("up ", "")
+    match uptime_lib::get() {
+        Ok(uptime) => {
+            let uptime_seconds = uptime.as_secs();
+            let days = uptime_seconds / (24 * 3600);
+            let hours = (uptime_seconds % (24 * 3600)) / 3600;
+            let minutes = (uptime_seconds % 3600) / 60;
+            let mut form_days: String = "".to_string();
+            let mut form_hours: String = "".to_string();
+            if days >= 1 {
+                form_days = format!("{} days, ", days);
+            }
+            if hours >= 1 {
+                form_hours = format!("{} hrs, ", hours);
+            }
+            format!("{}{}{} min", form_days, form_hours, minutes)
         }
-        Err(_) => "Unknown".to_string(), // If the command fails, assign
-                                         // up_time to "Unknown".
-    };
-
-    // Remove any newline character.
-
-    up_time.replace('\n', "")
+        Err(err) => {
+            eprintln!("uptime: {}", err);
+            std::process::exit(1);
+        }
+    }
 }
 
 pub fn get_hostname() -> String {

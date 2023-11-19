@@ -18,3 +18,4 @@ panic = "abort"
 [dependencies]
 clap = { version = "3.2.17", features = ["derive"] }
 colored = "2.0.0"
+uptime_lib = "0.2.2"
