@@ -2,71 +2,20 @@ use std::env; // For getting commandline arguments and reading Environment
               // Variables.
 extern crate uptime_lib;
 use std::error::Error;
-use std::fs; // For reading files.
 use std::process::Command; // For exit with a code.
+use sysinfo::{System, SystemExt};
 
 pub fn get_os_name() -> Result<String, Box<dyn Error>> {
-    // Get the name of the Distribution, using the `lsb_release` command.
-    let os_name = Command::new("lsb_release").arg("-sd").output();
-
-    let os_name = match os_name {
-        Ok(x) => String::from_utf8(x.stdout).unwrap(),
-        Err(_) => {
-            // Read the `/etc/os-release` file if `lsb_release` does not exist.
-            let file_name = String::from("/etc/os-release");
-
-            // Read the file
-            let file_contents = fs::read_to_string(file_name)?;
-
-            // Search for `PRETTY_NAME`
-            let search_string = "PRETTY_NAME";
-
-            for line in file_contents.lines() {
-                if line.contains(search_string) {
-                    // Get the value for the key, `PRETTY_NAME`
-                    let vec_new = line.split('=').last().unwrap();
-                    // Remove the '"' , i.e. double quotes from the output.
-                    let vec_new = vec_new.replace('"', "");
-                    return Ok(vec_new);
-                }
-            }
-            String::from("Unknown")
-        }
-    };
-    // Remove the '"' , i.e. double quotes from the output.
-    let os_name = os_name.replace('"', "");
-    let os_name = os_name.replace('\n', ""); // Remove any newline character
-
+    let mut sys = System::new_all();
+    sys.refresh_all();
+    let os_name = format!("{} {}", sys.name().unwrap(), sys.os_version().unwrap());
     Ok(os_name)
 }
 
 pub fn get_kernel_version() -> String {
-    // Get the kernel version with `uname -r`.
-    let kernel_ver = Command::new("uname").arg("-r").output();
-
-    let kernel_ver = match kernel_ver {
-        Ok(x) => {
-            // Reverse the string obtained from the output.
-            let rev_kernel_ver: String =
-                String::from_utf8(x.stdout).unwrap().chars().rev().collect();
-
-            // Split the string based on `-`, and then reverse it again,
-            // to obtain only the kernel version, and not any other info.
-            let rev_kernel_ver = rev_kernel_ver
-                .split('-')
-                .last()
-                .unwrap()
-                .chars()
-                .rev()
-                .collect();
-
-            rev_kernel_ver
-        }
-        Err(_) => "Unknown".to_string(), // If the command fails assign
-                                         // kernel_ver to "Unknown".
-    };
-
-    kernel_ver.strip_suffix("\n").unwrap().to_string()
+    let mut sys = System::new_all();
+    sys.refresh_all();
+    sys.kernel_version().unwrap()
 }
 
 pub fn get_shell_name() -> String {
@@ -86,6 +35,35 @@ pub fn get_shell_name() -> String {
     }
 }
 
+pub fn get_sys_uptime() -> String {
+    match uptime_lib::get() {
+        Ok(uptime) => {
+            let uptime_seconds = uptime.as_secs();
+            let days = uptime_seconds / (24 * 3600);
+            let hours = (uptime_seconds % (24 * 3600)) / 3600;
+            let minutes = (uptime_seconds % 3600) / 60;
+            let mut form_days: String = "".to_string();
+            let mut form_hours: String = "".to_string();
+            if days >= 1 {
+                form_days = format!("{} days, ", days);
+            }
+            if hours >= 1 {
+                form_hours = format!("{} hrs, ", hours);
+            }
+            format!("{}{}{} min", form_days, form_hours, minutes)
+        }
+        Err(err) => {
+            eprintln!("uptime: {}", err);
+            std::process::exit(1);
+        }
+    }
+}
+
+pub fn get_hostname() -> String {
+    let mut sys = System::new_all();
+    sys.refresh_all();
+    sys.host_name().unwrap()
+}
 pub fn get_session_name() -> String {
     // First check `DESKTOP_SESSION`.
     // Read the value of the Environment Variable, `DESKTOP_SESSION`
@@ -160,48 +138,6 @@ pub fn get_session_name() -> String {
         wm_name
     }
 }
-
-pub fn get_sys_uptime() -> String {
-    match uptime_lib::get() {
-        Ok(uptime) => {
-            let uptime_seconds = uptime.as_secs();
-            let days = uptime_seconds / (24 * 3600);
-            let hours = (uptime_seconds % (24 * 3600)) / 3600;
-            let minutes = (uptime_seconds % 3600) / 60;
-            let mut form_days: String = "".to_string();
-            let mut form_hours: String = "".to_string();
-            if days >= 1 {
-                form_days = format!("{} days, ", days);
-            }
-            if hours >= 1 {
-                form_hours = format!("{} hrs, ", hours);
-            }
-            format!("{}{}{} min", form_days, form_hours, minutes)
-        }
-        Err(err) => {
-            eprintln!("uptime: {}", err);
-            std::process::exit(1);
-        }
-    }
-}
-
-pub fn get_hostname() -> String {
-    // Get the hostname using the 'hostname' command
-    let hostname = Command::new("hostname").output();
-    let hostname = match hostname {
-        Ok(x) => String::from_utf8(x.stdout).unwrap(),
-        Err(_) => {
-            let hostname = Command::new("uname").arg("-n").output();
-            match hostname {
-                Ok(x) => String::from_utf8(x.stdout).unwrap(),
-                Err(_) => "Unknown".to_string(),
-            }
-        }
-    };
-    // Remove any new line character
-    hostname.replace('\n', "")
-}
-
 // Add some tests, for testing the `get_session_name()` function.
 #[cfg(test)]
 mod tests {
