@@ -66,7 +66,7 @@ pub fn get_kernel_version() -> String {
                                          // kernel_ver to "Unknown".
     };
 
-    kernel_ver
+    kernel_ver.strip_suffix("\n").unwrap().to_string()
 }
 
 pub fn get_shell_name() -> String {
