@@ -15,17 +15,17 @@ pub mod packages;
 fn main() {
     let args = FetchitArgs::parse();
 
-    let os_name = match fetchit::get_os_name() {
-        Ok(x) => x,
-        Err(_) => String::from("Unknown"),
-    };
-
-    let kernel = fetchit::get_kernel_version();
+    // let os_name = match fetchit::get_os_name() {
+    //     Ok(x) => x,
+    //     Err(_) => String::from("Unknown"),
+    // };
+    let (os_name, kernel, hostname) = fetchit::get_sys_info().unwrap();
+    // let kernel = fetchit::get_kernel_version();
     let shell_name = fetchit::get_shell_name();
     let session = fetchit::get_session_name();
     let uptime = fetchit::get_sys_uptime();
     let total_packages = packages::get_num_packages().to_string();
-    let hostname = fetchit::get_hostname();
+    // let hostname = fetchit::get_hostname();
     // Create a vector to store the lengths of all the strings
     let string_length_vector = vec![
         os_name.len(),

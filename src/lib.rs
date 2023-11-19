@@ -5,19 +5,25 @@ use std::error::Error;
 use std::process::Command; // For exit with a code.
 use sysinfo::{System, SystemExt};
 
-pub fn get_os_name() -> Result<String, Box<dyn Error>> {
-    let mut sys = System::new_all();
-    sys.refresh_all();
+pub fn get_sys_info() -> Result<(String, String, String), Box<dyn Error>> {
+    let sys = System::new_all();
+    // sys.refresh_system() // having to refresh in this case has a pointless runtime cost.;
     let os_name = format!("{} {}", sys.name().unwrap(), sys.os_version().unwrap());
-    Ok(os_name)
+    let host_name = sys.host_name().unwrap();
+    let kernel = sys.kernel_version().unwrap();
+    Ok((os_name, kernel, host_name))
 }
 
-pub fn get_kernel_version() -> String {
-    let mut sys = System::new_all();
-    sys.refresh_all();
-    sys.kernel_version().unwrap()
-}
-
+// pub fn get_hostname() -> String {
+//     let mut sys = System::new_all();
+//     sys.refresh_all();
+// }
+//
+// pub fn get_kernel_version() -> String {
+//     let mut sys = System::new_all();
+//     sys.refresh_all();
+// }
+//
 pub fn get_shell_name() -> String {
     // Read the value of the Environment Variable, `SHELL`
     // to obtain the current shell name.
@@ -59,11 +65,6 @@ pub fn get_sys_uptime() -> String {
     }
 }
 
-pub fn get_hostname() -> String {
-    let mut sys = System::new_all();
-    sys.refresh_all();
-    sys.host_name().unwrap()
-}
 pub fn get_session_name() -> String {
     // First check `DESKTOP_SESSION`.
     // Read the value of the Environment Variable, `DESKTOP_SESSION`
