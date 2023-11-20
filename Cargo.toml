@@ -2,7 +2,7 @@
 name = "fetchit"
 version = "1.0.0"
 edition = "2021"
-authors=["Ruturajn <nanotiruturaj@gmail.com>"]
+authors=["HirschBerge, Ruturajn"]
 description="A System fetch tool for Linux written in Rust"
 
 # Optimization paramaters, for reducing the binary size.
