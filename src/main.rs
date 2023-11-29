@@ -52,17 +52,26 @@ fn main() {
     let final_length = 11 + max_val + 5;
 
     // Define the default ascii art.
-    let mut ascii_string = "     ______________        
-    |  __________  |       
-    | :          : |       
-    | :   Rust   : |       
-    | :__________: |       
-    |______________|       
-    \\   =========   \\      
-     \\ ==== ____ === \\     
-      \\_____\\___\\_____\\    "
-        .to_string();
+    let mut ascii_string = r#"                     
+      \\  \\  //     
+     ==\\__\\/ //    
+       //   \\//     
+    ==//     //==    
+     //\\___//       
+    // /\\  \\==     
+      // \\  \\      
+                     "#
+    .to_string();
+    // |  __________  |
+    // | :          : |
+    // | :   Rust   : |
+    // | :__________: |
+    // |______________|
+    // \\   =========   \\
+    //  \\ ==== ____ === \\
+    //   \\_____\\___\\_____\\    "
 
+    //
     // Check for custom file, if given.
     let custom_ascii_string = match args.file_path {
         Some(x) => match fs::read_to_string(x) {
@@ -101,7 +110,7 @@ fn main() {
         .parse()
         .unwrap_or(Color::Blue);
     for (i, item) in ascii_vec.iter_mut().enumerate().take(9) {
-        let color = if i < 6 { top_color } else { bottom_color };
+        let color = if i < 5 { top_color } else { bottom_color };
         *item = item.color(color).to_string();
     }
 
