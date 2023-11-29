@@ -1,20 +1,15 @@
 // @Author: Ruturajn <nanotiruturaj@gmail.com>
 // @Date  : 18th August, 2022
 // @Brief : This is a system fetch tool for Linux written in Rust.
-
 use clap::Parser;
 use colored::Color;
 use colored::Colorize;
 use std::fs;
-
 // Bring the functions from `lib.rs`, and
 // `packages.rs` into scope.
-
 pub mod packages;
-
 fn main() {
     let args = FetchitArgs::parse();
-
     // let os_name = match fetchit::get_os_name() {
     //     Ok(x) => x,
     //     Err(_) => String::from("Unknown"),
@@ -36,21 +31,17 @@ fn main() {
         total_packages.len(),
         hostname.len(),
     ];
-
     // Initialize the maximum string length to `0.`
     let mut max_val = 0;
-
     // Iterate over the vector, to find the maximum string length.
     for val in &string_length_vector {
         if val > &max_val {
             max_val = *val;
         }
     }
-
     // Define the length for which the horizontal characters `─`
     // should be repeated.
     let final_length = 11 + max_val + 5;
-
     // Define the default ascii art.
     let mut ascii_string = "     ______________        
     |  __________  |       
@@ -62,7 +53,6 @@ fn main() {
      \\ ==== ____ === \\     
       \\_____\\___\\_____\\    "
         .to_string();
-
     // Check for custom file, if given.
     let custom_ascii_string = match args.file_path {
         Some(x) => match fs::read_to_string(x) {
@@ -71,7 +61,6 @@ fn main() {
         },
         None => "Unknown".to_string(),
     };
-
     // Update the ascii art if a file was passed, but
     // a check for the required length is also done.
     if custom_ascii_string != *"Unknown" {
@@ -83,13 +72,10 @@ fn main() {
             ascii_string = custom_ascii_string;
         }
     }
-
     let mut ascii_vec: Vec<String> = Vec::new();
-
     for line in ascii_string.lines() {
         ascii_vec.push(line.to_string());
     }
-
     let top_color = args
         .top_color
         .unwrap_or_else(|| "red".into())
@@ -104,14 +90,12 @@ fn main() {
         let color = if i < 6 { top_color } else { bottom_color };
         *item = item.color(color).to_string();
     }
-
     let mut box_side = "│".to_string();
     let mut box_top = "─".to_string().repeat(final_length);
     let mut box_top_left_corner = "╭".to_string();
     let mut box_top_right_corner = "╮".to_string();
     let mut box_bottom_left_corner = "╰".to_string();
     let mut box_bottom_right_corner = "╯".to_string();
-
     let outer_box_color = args
         .outer_box_color
         .unwrap_or_else(|| "blue".into())
@@ -123,13 +107,11 @@ fn main() {
     box_top_right_corner = box_top_right_corner.color(outer_box_color).to_string();
     box_bottom_left_corner = box_bottom_left_corner.color(outer_box_color).to_string();
     box_bottom_right_corner = box_bottom_right_corner.color(outer_box_color).to_string();
-
     // The number `14` defines the total characters, upto the output
     // for each system info value. For example,
     // ` OS          ` this will be printed before the name of the OS is
     // printed, and this text contains 14 characters. The `11` and `5` above
     // are chosen based on that formatting.
-
     println!();
     println!(
         "{} {}{}{}",
@@ -218,7 +200,6 @@ fn main() {
     );
     println!();
 }
-
 #[derive(Debug, Parser)]
 #[clap(author, version, about, long_about = None)]
 struct FetchitArgs {
@@ -226,18 +207,15 @@ struct FetchitArgs {
     /// : black, red, yellow, blue, magenta, cyan, white, green
     #[clap(short, long, value_parser)]
     top_color: Option<String>,
-
     /// Color for the bottom part of the ascii art
     /// : black, red, yellow, blue, magenta, cyan, white, green
     #[clap(short, long, value_parser)]
     bottom_color: Option<String>,
-
     /// Color for the box
     /// : black, red, yellow, blue, magenta, cyan, white, green
     #[clap(short, long, value_parser)]
     outer_box_color: Option<String>,
-
-    /// File path for the ascii text file
+    // File path for the ascii text file
     #[clap(short, long, parse(from_os_str))]
     file_path: Option<std::path::PathBuf>,
 }
