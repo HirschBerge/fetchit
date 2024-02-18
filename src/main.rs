@@ -88,14 +88,14 @@ fn main() {
     }
     let top_color = args
         .top_color
-        .unwrap_or_else(|| "red".into())
-        .parse()
-        .unwrap_or(Color::Red);
-    let bottom_color = args
-        .bottom_color
         .unwrap_or_else(|| "blue".into())
         .parse()
         .unwrap_or(Color::Blue);
+    let bottom_color = args
+        .bottom_color
+        .unwrap_or_else(|| "purple".into())
+        .parse()
+        .unwrap_or(Color::Purple);
     for (i, item) in ascii_vec.iter_mut().enumerate().take(9) {
         let color = if i < 5 { top_color } else { bottom_color };
         *item = item.color(color).to_string();
@@ -108,9 +108,9 @@ fn main() {
     let mut box_bottom_right_corner = "╯".to_string();
     let outer_box_color = args
         .outer_box_color
-        .unwrap_or_else(|| "blue".into())
+        .unwrap_or_else(|| "Purple".into())
         .parse()
-        .unwrap_or(Color::Blue);
+        .unwrap_or(Color::Purple);
     box_side = box_side.color(outer_box_color).to_string();
     box_top = box_top.color(outer_box_color).to_string();
     box_top_left_corner = box_top_left_corner.color(outer_box_color).to_string();
