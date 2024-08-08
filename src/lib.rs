@@ -100,8 +100,8 @@ pub fn get_session_name() -> String {
                             .unwrap()
                             .to_string()
                             .replace(['"', ' '], ""); // Remove double-quotes.
-                                               // present between the `_NET_WM_NAME`
-                                               // and it's value, after the `=` sign.
+                                                      // present between the `_NET_WM_NAME`
+                                                      // and it's value, after the `=` sign.
                         return wm_name;
                     }
                 }
